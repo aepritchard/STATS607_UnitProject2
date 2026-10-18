@@ -12,9 +12,7 @@ import scipy
 import sklearn
 from threadpoolctl import threadpool_limits
 
-from .dgps import DGP_CLASSES
-from .methods import LAD, OLS
-from .metrics import evaluate
+from dgps.py import DGP
 
 
 def rng_for(seed, scenario_id, rep, task):
@@ -46,5 +44,11 @@ class SimulationStudy:
                  out_dir="results/raw"):
         self.scenarios, self.seed = scenarios, seed
         self.out_dir = Path(out_dir)
+
+    def run_scenario(self, scenario_id, settings):
+        '''
+        Run a scenario and output results
+        '''
+        experiment_data = 
 
     
