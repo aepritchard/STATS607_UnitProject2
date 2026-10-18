@@ -13,8 +13,18 @@ class DGP:
         self.pi_treat = pi_treat
         self.cut_control = cut_control
         self.cut_treat = cut_treat
-        self.covariate = "V"
+        self.covariate = observed_covariate
         self.n_treat = int(round(pi_treat * n_sample))
+
+    def true_delta(self):
+        '''
+        Finite-population differential log odds
+        '''
+        alpha_treat = np.mean(self.Y_treat)
+        alpha_control = np.mean(self.Y_control)
+        log_odds_treat = np.log(alpha_treat / (1.0 - alpha_treat))
+        log_odds_control = np.log(alpha_control / (1.0 - alpha_control))
+        return log_odds_treat - log_odds_control
 
     def generate_covariates(self):
         '''
@@ -59,24 +69,24 @@ class DGP:
         trt_assignment[treated_index] = 1
         return trt_assignment
 
-    def generate_experiments(self):
+    def generate_repetitions(self):
         '''
         Generate experiements
         '''
         self.generate_outcomes()
 
-        all_experiments = []
+        all_repetitions = []
         for sim_index in range(self.n_sim):
             trt_assignment = self.generate_treatment()
             Y_observed = trt_assignment * self.Y_treatment + (1-trt_assignment) * self.Y_control
 
-            experiment = {
+            repetition = {
                 "sim_index": sim_index,
                 "trt": trt_assignment,
                 "Y_observed": Y_observed
             }
-            all_experiments.append(experiment)
+            all_repetitions.append(repetition)
 
-        return all_experiments
+        return all_repetitions
 
         
