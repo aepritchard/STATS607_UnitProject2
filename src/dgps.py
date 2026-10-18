@@ -33,17 +33,50 @@ class DGP:
         V = covariates[1, :]
 
         # Define outcomes based on covariates
-        control_outcome = np.zeros(self.n_sample, dtype=int)
-        control_outcome[U > self.cut_control] = 1
+        Y_control = np.zeros(self.n_sample, dtype=int)
+        Y_control[U > self.cut_control] = 1
 
-        treat_outcome = np.zeros(self.n_sample, dtype=int)
-        treat_outcome[U + V > self.cut_treat] = 1
+        Y_treatment = np.zeros(self.n_sample, dtype=int)
+        Y_treatment[U + V > self.cut_treat] = 1
 
         if self.covariate == "V":
-            Z= V
+            Z = V
         elif self.covariate == "U+V":
             Z = U + V
         else:
             raise ValueError(rf"covariate must be 'V' or 'U+V', recieved {self.covariate}")
+
+        self.Z = Z
+        self.Y_control = Y_control
+        self.Y_treatment = Y_treatment
+
+    def generate_treatment(self, rng):
+        '''
+        Randomly assign treatment for one simulation repitition
+        '''
+        trt_assignment = np.zeros(self.n_sample, dtype=int)
+        treated_index = self.rng.choice(self.n_sample, size=self.n_treat, replace=False)
+        trt_assignment[treated_index] = 1
+        return trt_assignment
+
+    def generate_experiments(self):
+        '''
+        Generate experiements
+        '''
+        self.generate_outcomes()
+
+        all_experiments = []
+        for sim_index in range(self.n_sim):
+            trt_assignment = self.generate_treatment()
+            Y_observed = trt_assignment * self.Y_treatment + (1-trt_assignment) * self.Y_control
+
+            experiment = {
+                "sim_index": sim_index,
+                "trt": trt_assignment,
+                "Y_observed": Y_observed
+            }
+            all_experiments.append(experiment)
+
+        return all_experiments
 
         
