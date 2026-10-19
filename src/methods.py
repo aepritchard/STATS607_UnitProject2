@@ -1,8 +1,9 @@
 import numpy as np
 import statsmodels.api as sm
 
+from abc import ABC, abstractmethod
 
-class Methods():
+class Methods(ABC):
     '''
     Estimators for one randomized experiment
     Fits the logit model, then computes the plug-in and ITT estimators
@@ -32,19 +33,14 @@ class Methods():
         linear_predictor = beta[0] + beta[1] * trt + beta[2] * covariate_observed
         return np.exp(linear_predictor) / (1 + np.exp(linear_predictor))
 
-    def fit_logit(self):
+    @abstractmethod
+    def fit_model(self):
         '''
-        Fits logit model of Y on (1, trt, covariate_observed) with maximum likelihood
+        Fits model of Y on (1, trt, covariate_observed) with maximum likelihood
         Returns beta hat estimates
         '''
-        intercept = np.ones(len(self.Y_observed))
-        design_matrix = np.column_stack((intercept, self.trt, self.covariate_observed))
-
-        model = sm.Logit(self.Y_observed, design_matrix)
-        fit = model.fit(disp=0)
-
-        beta_hat = fit.params
-        return beta_hat
+        pass
+        
 
     def plug_in_estimator(self, beta_hat):
         '''
@@ -87,3 +83,31 @@ class Methods():
             "itt": delta_hat,
         }
         return results
+
+class Methods_logit(Methods):
+    def __init__(self, trt, Y_observed, covariate_observed):
+        super().__init__(trt, Y_observed, covariate_observed)
+
+    def fit_model(self):
+        intercept = np.ones(len(self.Y_observed))
+        design_matrix = np.column_stack((intercept, self.trt, self.covariate_observed))
+
+        model = sm.Logit(self.Y_observed, design_matrix)
+        fit = model.fit(disp=0)
+
+        beta_hat = fit.params
+        return beta_hat
+
+class Methods_probit(Methods):
+    def __init__(self, trt, Y_observed, covariate_observed):
+        super().__init__(trt, Y_observed, covariate_observed)
+
+    def fit_model(self):
+        intercept = np.ones(len(self.Y_observed))
+        design_matrix = np.column_stack((intercept, self.trt, self.covariate_observed))
+
+        model = sm.Probit(self.Y_observed, design_matrix)
+        fit = model.fit(disp=0)
+
+        beta_hat = fit.params
+        return beta_hat
