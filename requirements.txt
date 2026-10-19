@@ -1,0 +1,7 @@
+numpy
+pandas
+scipy
+statsmodels
+threadpoolctl
+tqdm
+pytest

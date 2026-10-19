@@ -12,6 +12,7 @@ SCENARIOS = {}
 # 25% of subjects assigned to control, 75% assigned to trt
 # Control cut off = 1/2, treatment cut off = 3/4
 # Observed covariate Z = V
+# Both logit and probit models are fit (probit: Section 6)
 BASELINE = {
     "covariate_distribution": "uniform",
     "models": ["logit"],
@@ -26,6 +27,7 @@ for n_sample in N_SAMPLES:
         **BASELINE,
         "experiment": "e1_table1",
         "n_sample": n_sample,
+        "models": ["logit", "probit"],
     }
 
 #### Experiment 2: Change % treated

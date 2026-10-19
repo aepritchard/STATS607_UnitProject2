@@ -16,7 +16,7 @@ simulate:
 
 # Compute performance measures from results/raw/runs.csv
 analyze:
-	PYTHONPATH=src python3 -c "from metrics import main; main()"
+	PYTHONPATH=src python3 -c "from metrics import main; run_all_metrics()"
 
 # Create all visualizations (figure code not written yet)
 figures:
