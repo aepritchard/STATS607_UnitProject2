@@ -19,15 +19,14 @@ class DGP(ABC):
         self.covariate = observed_covariate
         self.n_treat = int(round(pi_treat * n_sample))
 
-    def true_delta(self):
+    def true_delta(self, link):
         '''
-        Finite-population differential log odds
+        Finite-population differential parameter on the scale of the link:
+                log odds for the logit (eq 2), Phi^{-1} for the probit (Section 6)
         '''
-        alpha_treat = np.mean(self.Y_treat)
+        alpha_treat = np.mean(self.Y_treatment)
         alpha_control = np.mean(self.Y_control)
-        log_odds_treat = np.log(alpha_treat / (1.0 - alpha_treat))
-        log_odds_control = np.log(alpha_control / (1.0 - alpha_control))
-        return log_odds_treat - log_odds_control
+        return link(alpha_treat) - link(alpha_control)
 
     @abstractmethod
     def generate_covariates(self):
@@ -64,7 +63,7 @@ class DGP(ABC):
         self.Y_control = Y_control
         self.Y_treatment = Y_treatment
 
-    def generate_treatment(self, rng):
+    def generate_treatment(self):
         '''
         Randomly assign treatment for one simulation repitition
         '''
@@ -110,7 +109,7 @@ class DGP_Beta(DGP):
         super().__init__(experiment, n_sample, rng, n_sim, pi_treat, 
                              cut_control, cut_treat, observed_covariate)
         
-        if isinstance(alpha, (int, float, complex)):
+        if isinstance(alpha, (int, float)):
             if alpha > 0:
                 self.alpha = alpha
             else:
@@ -118,7 +117,7 @@ class DGP_Beta(DGP):
         else:
             raise TypeError(rf"alpha must be a number, recieved {alpha}")
 
-        if isinstance(beta, (int, float, complex)):
+        if isinstance(beta, (int, float)):
             if beta > 0:
                 self.beta = beta
             else:

@@ -1,5 +1,6 @@
 import numpy as np
 import statsmodels.api as sm
+from scipy.stats import norm
 
 from abc import ABC, abstractmethod
 
@@ -16,22 +17,35 @@ class Methods(ABC):
         self.covariate_observed = covariate_observed
 
     @staticmethod
-    def logit(p):
+    def check_probability(prob):
         '''
-        Returns logit of probability p
+        Raises an error if prob is not in (0,1)
         '''
-        if p <= 0 or p >= 1:
-            raise ValueError(rf"p must be in (0,1), recieved {p}")
-        return np.log(p / (1 - p))
+        if prob <= 0 or prob >= 1:
+            raise ValueError(rf"p must be in (0,1), recieved {prob}")
 
     @staticmethod
-    def p(beta, trt, covariate_observed):
+    @abstractmethod
+    def link(prob):
         '''
-        Fits equation (4) of paper
+        Link function: logit for the logit model, Phi^{-1} for the probit model
+        '''
+        pass
+
+    @staticmethod
+    @abstractmethod
+    def inverse_link(linear_predictor):
+        '''
+        Inverse link: maps the linear predictor to a probability
+        '''
+        pass
+
+    def p(self, beta, trt, covariate_observed):
+        '''
         Conditional probability that Y_i=1 given beta, X_i, Z_i
         '''
         linear_predictor = beta[0] + beta[1] * trt + beta[2] * covariate_observed
-        return np.exp(linear_predictor) / (1 + np.exp(linear_predictor))
+        return self.inverse_link(linear_predictor)
 
     @abstractmethod
     def fit_model(self):
@@ -52,7 +66,7 @@ class Methods(ABC):
         alpha_tilde_control = np.mean(self.p(beta_hat, 0, self.covariate_observed))
 
         # Get estimated differential log odds (eq 10b)
-        delta_tilde = self.logit(alpha_tilde_treated) - self.logit(alpha_tilde_control)
+        delta_tilde = self.link(alpha_tilde_treated) - self.link(alpha_tilde_control)
         return delta_tilde
 
     def itt_estimate(self):
@@ -63,7 +77,7 @@ class Methods(ABC):
         alpha_treat_hat = np.mean(self.Y_observed[self.trt == 1])
         alpha_control_hat = np.mean(self.Y_observed[self.trt == 0])
 
-        delta_hat = self.logit(alpha_treat_hat) - self.logit(alpha_control_hat)
+        delta_hat = self.link(alpha_treat_hat) - self.link(alpha_control_hat)
         return delta_hat
 
     def run_methods(self):
@@ -71,7 +85,7 @@ class Methods(ABC):
         Runs all methods on the stored experiment
         Returns a dict with the logit coefficients, plug-in estimate, and ITT estimate
         '''
-        beta_hat = self.fit_logit()
+        beta_hat = self.fit_model()
         delta_tilde = self.plug_in_estimator(beta_hat)
         delta_hat = self.itt_estimate()
 
@@ -85,8 +99,15 @@ class Methods(ABC):
         return results
 
 class Methods_logit(Methods):
-    def __init__(self, trt, Y_observed, covariate_observed):
-        super().__init__(trt, Y_observed, covariate_observed)
+
+    @staticmethod
+    def link(prob):
+        Methods.check_probability(prob)
+        return np.log(prob / (1 - prob))
+
+    @staticmethod
+    def inverse_link(linear_predictor):
+        return np.exp(linear_predictor) / (1 + np.exp(linear_predictor))
 
     def fit_model(self):
         intercept = np.ones(len(self.Y_observed))
@@ -99,8 +120,15 @@ class Methods_logit(Methods):
         return beta_hat
 
 class Methods_probit(Methods):
-    def __init__(self, trt, Y_observed, covariate_observed):
-        super().__init__(trt, Y_observed, covariate_observed)
+
+    @staticmethod
+    def link(prob):
+        Methods.check_probability(prob)
+        return norm.ppf(prob)
+
+    @staticmethod
+    def inverse_link(linear_predictor):
+        return norm.cdf(linear_predictor)
 
     def fit_model(self):
         intercept = np.ones(len(self.Y_observed))

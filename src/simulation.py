@@ -13,9 +13,11 @@ import scipy
 import statsmodels
 from threadpoolctl import threadpool_limits
 
-from dgps import DGP
-from methods import Methods
+from dgps import DGP_Uniform, DGP_Beta
+from methods import Methods_logit, Methods_probit
 
+DGP_CLASSES = {"uniform": DGP_Uniform, "beta": DGP_Beta}
+METHOD_CLASSES = {"logit": Methods_logit, "probit": Methods_probit}
 
 def rng_for(seed, scenario_id, rep, task):
     label = json.dumps([scenario_id, rep, task], separators=(",", ":"))
@@ -85,49 +87,67 @@ class SimulationStudy:
         # Generate data for experiment
         rng = rng_for(self.seed, scenario_id, 0, "dgp")
 
-        dgp = DGP(n_sample=settings['n_sample'],
-                  rng = rng,
-                  n_sim = self.n_sim,
-                  pi_treat = settings['pi_treat'],
-                  cut_control = settings['cut_control'],
-                  cut_treat = settings['settings'],
-                  observed_covariate = settings['observed_covariate']
-                  )
+        dgp_class = DGP_CLASSES[settings['covariate_distribution']]
+
+        dgp_settings = {
+            "experiment": settings['experiment'],
+            "n_sample": settings['n_sample'],
+            "rng": rng,
+            "n_sim": self.n_sim,
+            "pi_treat": settings['pi_treat'],
+            "cut_control": settings['cut_control'],
+            "cut_treat": settings['cut_treat'],
+            "observed_covariate": settings['observed_covariate'],
+        }
+        if settings['covariate_distribution'] == "beta":
+            dgp_settings["alpha"] = settings['beta_dist_alpha']
+            dgp_settings["beta"] = settings['beta_dist_beta']
+
+        dgp = dgp_class(**dgp_settings)
 
         repetition_data = dgp.generate_repetitions()
-        true_delta = dgp.true_delta()
+
+        # True parameter on each model's scale (log odds for logit, Phi^{-1} for probit)
+        true_deltas = {}
+        for model in settings['models']:
+            true_deltas[model] = dgp.true_delta(link=METHOD_CLASSES[model].link)
 
         # Perform methods on experimental data
         rows = []
         for repetition in tqdm(repetition_data, desc=scenario_id, unit="rep"):
-            start = perf_counter()
-            failure_reason = ""
+            for model in settings['models']:
+                method_class = METHOD_CLASSES[model]
+                start = perf_counter()
+                failure_reason = ""
 
-            with warnings.catch_warnings(record=True) as caught:
-                warnings.simplefilter('always')
-                try:
-                    methods = Methods(repetition['trt'], repetition['Y_observed'])
-                    estimates = methods.run_methods()
-                except Exception as error:
-                    estimates = {"beta1_hat": np.nan, "beta2_hat": np.nan,
-                                 "beta3_hat": np.nan, "plug_in": np.nan,
-                                 "itt": np.nan}
-                    failure_reason = type(error).__name__
+                with warnings.catch_warnings(record=True) as caught:
+                    warnings.simplefilter('always')
+                    try:
+                        methods = method_class(repetition['trt'], repetition['Y_observed'], dgp.Z)
+                        estimates = methods.run_methods()
+                    except Exception as error:
+                        estimates = {"beta1_hat": np.nan, "beta2_hat": np.nan,
+                                     "beta3_hat": np.nan, "plug_in": np.nan,
+                                     "itt": np.nan}
+                        failure_reason = type(error).__name__
 
-            if failure_reason == "" and len(caught) > 0:
-                failure_reason = "warning: " + type(caught[0].message).__name__
+                if failure_reason == "" and len(caught) > 0:
+                    failure_reason = "warning: " + type(caught[0].message).__name__
 
-            row = {
-                "scenario_id": scenario_id,
-                "sim_index": repetition["sim_index"],
-                "n_sample": settings["n_sample"],
-                "pi_treat": settings["pi_treat"],
-                "true_delta": true_delta,
-                "failure_reason": failure_reason,
-                "seconds": perf_counter() - start,
-            }
-            row.update(estimates)
-            rows.append(row)
+                row = {
+                    "study_id": self.study_id,
+                    "scenario_id": scenario_id,
+                    "experiment": settings["experiment"],
+                    "model": model,
+                    "sim_index": repetition["sim_index"],
+                    "n_sample": settings["n_sample"],
+                    "pi_treat": settings["pi_treat"],
+                    "true_delta": true_deltas[model],
+                    "failure_reason": failure_reason,
+                    "seconds": perf_counter() - start,
+                }
+                row.update(estimates)
+                rows.append(row)
 
         frame = pd.DataFrame(rows)
         save_csv(frame, checkpoint)
