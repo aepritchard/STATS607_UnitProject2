@@ -1,12 +1,15 @@
 import numpy as np
+from abc import ABC, abstractmethod
 
-class DGP:
+
+class DGP(ABC):
     '''
     Generate covariates and define outcomes based on covariates with length n_sample
     Randomize treatment assignment n_sim times with probability pi_treat
     '''
-    def __init__(self, n_sample, rng, n_sim=1000, pi_treat=0.75,
+    def __init__(self, experiment, n_sample, rng, n_sim=1000, pi_treat=0.75,
                  cut_control=0.5, cut_treat=0.75, observed_covariate="V"):
+        self.experiment = experiment
         self.n_sim = n_sim
         self.n_sample = n_sample
         self.rng = rng
@@ -26,12 +29,13 @@ class DGP:
         log_odds_control = np.log(alpha_control / (1.0 - alpha_control))
         return log_odds_treat - log_odds_control
 
+    @abstractmethod
     def generate_covariates(self):
         '''
-        Covariates U and V with length n_sample are drawn from Uniform distribution
+        Covariates U and V with length n_sample are drawn from specific distribution
         Returns (2 x n_sample) matrix of values
         '''
-        return self.rng.uniform(low=0.0, high=1.0, size=(2,self.n_sample))
+        pass
 
     def generate_outcomes(self):
         '''
@@ -81,6 +85,7 @@ class DGP:
             Y_observed = trt_assignment * self.Y_treatment + (1-trt_assignment) * self.Y_control
 
             repetition = {
+                "experiment": self.experiment,
                 "sim_index": sim_index,
                 "trt": trt_assignment,
                 "Y_observed": Y_observed
@@ -89,4 +94,37 @@ class DGP:
 
         return all_repetitions
 
+class DGP_Uniform(DGP):
+    def __init__(self, experiment, n_sample, rng, n_sim=1000, pi_treat=0.75, 
+                 cut_control=0.5, cut_treat=0.75, observed_covariate="V"):
+        super().__init__(experiment, n_sample, rng, n_sim, pi_treat, 
+                         cut_control, cut_treat, observed_covariate)
+
+    def generate_covariates(self):
+        return self.rng.uniform(low=0.0, high=1.0, size=(2,self.n_sample))
+
+class DGP_Beta(DGP):
+    def __init__(self, experiment, n_sample, rng, n_sim=1000, pi_treat=0.75, 
+                     cut_control=0.5, cut_treat=0.75, observed_covariate="V",
+                     alpha = 2.0, beta=5.0):
+        super().__init__(experiment, n_sample, rng, n_sim, pi_treat, 
+                             cut_control, cut_treat, observed_covariate)
         
+        if isinstance(alpha, (int, float, complex)):
+            if alpha > 0:
+                self.alpha = alpha
+            else:
+                raise ValueError(rf"alpha must be > 0, recieved {alpha}")
+        else:
+            raise TypeError(rf"alpha must be a number, recieved {alpha}")
+
+        if isinstance(beta, (int, float, complex)):
+            if beta > 0:
+                self.beta = beta
+            else:
+                raise ValueError(rf"beta must be > 0, recieved {beta}")
+        else:
+            raise TypeError(rf"beta must be a number, recieved {beta}")
+    
+    def generate_covariates(self):
+        return self.rng.beta(a=self.alpha, b=self.beta, size=(2,self.n_sample))
