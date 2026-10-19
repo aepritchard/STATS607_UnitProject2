@@ -46,13 +46,15 @@ for n_sample in N_SAMPLES:
 # Use same set-up as experiment 1, BUT change control and treatment cut offs
 # Control cut off = 0.95, treatment cut off = 1.5
 for n_sample in N_SAMPLES:
-    SCENARIOS[f"e3_n{n_sample}"] = {
-        **BASELINE,
-        "experiment": "e3_cutoffs",
-        "n_sample": n_sample,
-        "cut_control": 0.95,
-        "cut_treat": 1.5,
-    }
+    for control_cutoff in [0.5, 0.95]:
+        for trt_cutoff in [0.75, 1.5]:
+            SCENARIOS[f"e3_n{n_sample}_ctrlcut{control_cutoff}_trtcut{trt_cutoff}"] = {
+                **BASELINE,
+                "experiment": "e3_cutoffs",
+                "n_sample": n_sample,
+                "cut_control": control_cutoff,
+                "cut_treat": trt_cutoff,
+            }
 
 #### Experiment 4: Change observed covariate
 # Use same set-up as experiment 1, BUT change observed covariate
