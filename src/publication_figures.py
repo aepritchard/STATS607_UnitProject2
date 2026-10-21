@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 from figure_settings import (N_SAMPLES, CONDITIONS, SEPARATE_SCALE_EXPERIMENT, ESTIMATOR_STYLES, DPI,
+                             N_SAMPLE_COLORS, COEFFICIENT_STYLES,
                              select_condition, remove_top_right_spines, set_shared_y_limits)
 
 def plot_bias_vs_n(performance, out_dir):
@@ -64,20 +65,58 @@ def plot_bias_vs_n(performance, out_dir):
     fig.savefig(Path(out_dir) / "bias_vs_n.png", dpi=DPI, bbox_inches="tight")
     plt.close(fig)
 
+def plot_probit_vs_logit(paired, out_dir):
+    '''
+    Experiment 1: probit vs logit coefficients
+    One panel per coefficient (beta1, beta2, beta3): probit vs logit estimate,
+            points colored by n, reference line probit = (5/8) logit
+    '''
+    fig, axes = plt.subplots(1, 3, figsize=(12, 4.5))
+
+    for ax, (coefficient, coefficient_style) in zip(axes, COEFFICIENT_STYLES.items()):
+        all_logit_values = []
+
+        for n_sample in N_SAMPLES:
+            at_n = paired[paired["n_sample"] == n_sample]
+            logit_values = at_n[f"{coefficient}_logit"].to_numpy()
+            probit_values = at_n[f"{coefficient}_probit"].to_numpy()
+
+            ax.scatter(logit_values, probit_values, s=6, alpha=0.5,
+                       color=N_SAMPLE_COLORS[n_sample], label=f"n = {n_sample}")
+            all_logit_values.append(logit_values)
+
+        all_logit_values = np.concatenate(all_logit_values)
+        x_line = np.linspace(np.min(all_logit_values), np.max(all_logit_values), 100)
+        ax.plot(x_line, (5 / 8) * x_line, color="black", linestyle="--", linewidth=1,
+                label=r"probit $= (5/8) \times$ logit")
+
+        ax.set_title(coefficient_style["label"], fontsize=11)
+        ax.set_xlabel("Logit estimate")
+        ax.set_ylabel("Probit estimate")
+        remove_top_right_spines(ax)
+
+    # One legend: n colors and reference line
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper center", ncol=5, frameon=False, markerscale=3)
+
+    fig.tight_layout(rect=[0, 0, 1, 0.9])
+
+    fig.savefig(Path(out_dir) / "probit_vs_logit.png", dpi=DPI, bbox_inches="tight")
+    plt.close(fig)
+
 def run_publication_figures(performance_path="results/tables/performance.csv",
-                            runs_path="results/raw/runs.csv",
+                            paired_path="results/tables/probit_logit_paired.csv",
                             out_dir="results/figures"):
     '''
-    Reads the performance table, creates publication-quality figure
+    Reads the summary tables made by make analyze, creates publication-quality figures
     '''
     # Create output folder
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load performance table and raw results
+    # Load tables
     performance = pd.read_csv(performance_path)
-    runs = pd.read_csv(runs_path)
-    runs["failure_reason"] = runs["failure_reason"].fillna("")
+    paired = pd.read_csv(paired_path)
 
     plot_bias_vs_n(performance, out_dir)
-    plot_probit_vs_logit(runs, out_dir)
+    plot_probit_vs_logit(paired, out_dir)
