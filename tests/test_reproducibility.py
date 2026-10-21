@@ -1,7 +1,7 @@
 '''
 Reproducibility test
-    Rerunning w/ the same seed gives identical results
-    Rerunning w/ a different seed gives different results
+    Verify that rerunning w/ the same seed gives identical results
+    Verify that rerunning w/ a different seed gives different results
 '''
 
 import numpy as np
