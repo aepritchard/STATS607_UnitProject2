@@ -21,7 +21,7 @@ analyze:
 # Create all visualizations
 figures:
 	PYTHONPATH=src python3 -c "from publication_figures import run_publication_figures; run_publication_figures()"
-# PYTHONPATH=src python3 -c "from diagnostic_figures import run_diagnostic_figures; run_diagnostic_figures()"
+	PYTHONPATH=src python3 -c "from diagnostic_figures import run_diagnostic_figures; run_diagnostic_figures()"
 
 # Run test suite
 test:

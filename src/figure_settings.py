@@ -16,6 +16,16 @@ CONDITIONS = [
     {"label": "E5: (U, V) ~ Beta(2, 5)", "experiment": "e5_joint_dist", "pi_treat": 0.75},
 ]
 
+# Colors for sample sizes, light (n = 100) to dark (n = 5000), used when points are colored by n
+N_SAMPLE_COLORS = {100: "#cbc9e2", 500: "#9e9ac8", 1000: "#756bb1", 5000: "#54278f"}
+
+# Colors and markers for the model coefficients (not used for any estimator)
+COEFFICIENT_STYLES = {
+    "beta1_hat": {"label": r"$\hat{\beta}_1$ (intercept)", "color": "#E69F00", "marker": "o"},
+    "beta2_hat": {"label": r"$\hat{\beta}_2$ (treatment)", "color": "#CC79A7", "marker": "s"},
+    "beta3_hat": {"label": r"$\hat{\beta}_3$ (covariate)", "color": "#56B4E9", "marker": "^"},
+}
+
 # For all experiments except E4, have very small bias
 # Want to share axes for easy comparison, but allow E4 to have its own axis
 #   That way all plots are still visible

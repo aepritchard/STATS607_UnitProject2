@@ -65,6 +65,7 @@ def plot_bias_vs_n(performance, out_dir):
     plt.close(fig)
 
 def run_publication_figures(performance_path="results/tables/performance.csv",
+                            runs_path="results/raw/runs.csv",
                             out_dir="results/figures"):
     '''
     Reads the performance table, creates publication-quality figure
@@ -73,7 +74,10 @@ def run_publication_figures(performance_path="results/tables/performance.csv",
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # Load performance table
+    # Load performance table and raw results
     performance = pd.read_csv(performance_path)
+    runs = pd.read_csv(runs_path)
+    runs["failure_reason"] = runs["failure_reason"].fillna("")
 
     plot_bias_vs_n(performance, out_dir)
+    plot_probit_vs_logit(runs, out_dir)
