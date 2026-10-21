@@ -104,6 +104,72 @@ def table1(performance, experiment="e1_table1", model="logit"):
 
     return pd.DataFrame(rows)
 
+
+
+COEFFICIENTS = ["beta1_hat", "beta2_hat", "beta3_hat"]
+
+def paired_probit_logit(runs, experiment="e1_table1"):
+    '''
+    Logit and probit coefficients fit to the same randomizations, matched by sim_index
+    Keeps repetitions valid for both models
+    One row per (n_sample, sim_index) with columns <coefficient>_logit and <coefficient>_probit
+    '''
+    experiment_runs = runs[runs["experiment"] == experiment]
+
+    frames = []
+    for n_sample, at_n in experiment_runs.groupby("n_sample"):
+        valid_logit, counts_logit = get_valid_reps(at_n[at_n["model"] == "logit"])
+        valid_probit, counts_probit = get_valid_reps(at_n[at_n["model"] == "probit"])
+
+        columns = ["sim_index"] + COEFFICIENTS
+        paired = pd.merge(valid_logit[columns], valid_probit[columns],
+                          on="sim_index", suffixes=("_logit", "_probit"))
+        paired.insert(0, "n_sample", n_sample)
+        frames.append(paired)
+
+    return pd.concat(frames, ignore_index=True)
+
+def ratio_of_means(probit_estimates, logit_estimates):
+    '''
+    Ratio of mean probit estimate to mean logit estimate, with Monte Carlo SE by the delta method
+    Var(a/b) ~ Var(a)/b^2 + a^2 Var(b)/b^4 - 2 a Cov(a, b)/b^3,
+            where a, b are the two means and the covariance uses the pairing
+    '''
+    n_valid = len(probit_estimates)
+    mean_probit = np.mean(probit_estimates)
+    mean_logit = np.mean(logit_estimates)
+    ratio = mean_probit / mean_logit
+
+    var_mean_probit = np.var(probit_estimates, ddof=1) / n_valid
+    var_mean_logit = np.var(logit_estimates, ddof=1) / n_valid
+    cov_means = np.cov(probit_estimates, logit_estimates, ddof=1)[0, 1] / n_valid
+
+    var_ratio = (var_mean_probit / mean_logit ** 2
+                 + mean_probit ** 2 * var_mean_logit / mean_logit ** 4
+                 - 2 * mean_probit * cov_means / mean_logit ** 3)
+    mcse_ratio = np.sqrt(var_ratio)
+
+    return ratio, mcse_ratio
+
+def probit_logit_ratio_table(paired):
+    '''
+    One row per (n_sample, coefficient): ratio of mean probit to mean logit estimate and its MCSE
+    '''
+    rows = []
+    for n_sample, at_n in paired.groupby("n_sample"):
+        for coefficient in COEFFICIENTS:
+            ratio, mcse_ratio = ratio_of_means(at_n[f"{coefficient}_probit"].to_numpy(),
+                                               at_n[f"{coefficient}_logit"].to_numpy())
+            rows.append({
+                "n_sample": n_sample,
+                "coefficient": coefficient,
+                "n_paired": len(at_n),
+                "ratio": ratio,
+                "mcse_ratio": mcse_ratio,
+            })
+
+    return pd.DataFrame(rows)
+
 def run_all_metrics(runs_path="results/raw/runs.csv", out_dir="results/tables"):
     '''
     Reads raw simulation results, computes performance measures, saves summary tables
@@ -127,3 +193,12 @@ def run_all_metrics(runs_path="results/raw/runs.csv", out_dir="results/tables"):
     table1_reproduction = table1(performance)
     table1_path = out_dir / "table1_reproduction.csv"
     table1_reproduction.to_csv(table1_path, index=False)
+
+    # Probit vs logit coefficients (experiment 1)
+    paired = paired_probit_logit(runs)
+    paired_path = out_dir / "probit_logit_paired.csv"
+    paired.to_csv(paired_path, index=False)
+
+    ratio_table = probit_logit_ratio_table(paired)
+    ratio_path = out_dir / "probit_logit_ratio.csv"
+    ratio_table.to_csv(ratio_path, index=False)
