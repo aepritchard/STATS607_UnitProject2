@@ -15,6 +15,7 @@ In the main project directory, the following commands are defined in the Makefil
 * `make clean`: removes all genrated files
 * `make test`: runs all tests
 
-The entire setup, simulation, analysis, and figure generating process takes xxxx minutes to run.
+The entire setup, simulation, analysis, and figure generating process takes under a minute to run.
 
 ## Summary of Key Findings
+Across all scenarios and variations, the coefficient estimator $\hat{\beta}_2$ is biased for $\Delta$ while the plug-in and ITT estimators $\tilde{\Delta}$ and $\hat{\Delta}$ are consistently unbiased for $\Delta$. The largest difference between the estimators is seen when $Z=U+V$ is observed instead of $Z=V$. For this scenario, $\hat{\beta}_2$ has biases around $2$, while $\tilde{\delta}$ and $\hat{\delta}$ are unbiased. As described in the paper, using a probit model resulted in coefficients that were roughly 5/8 of that of the logit model, especially for larger sample sizes.

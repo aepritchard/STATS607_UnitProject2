@@ -366,12 +366,12 @@
   "seed": 607,
   "source_sha256": {
     "dgps.py": "327b59ec3b1faf6de3cd7dc1bd1bd9629a0a31bd44aa7108a35a97606903c77f",
-    "diagnostic_figures.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-    "figure_settings.py": "a83d884f4bb8cc59b0d1a5ca9aa3fdad0ef1a4f3ab20865d6a5c9fd784418af9",
+    "diagnostic_figures.py": "9161ad2e7a032cb7c3baaf6b2d8598b6620c154a1b701edd02e19207a4c28a3b",
+    "figure_settings.py": "1fb9929b9c04f265275a874571062c9a546f941e3fc812fcf430cbb9d1e21a3b",
     "methods.py": "ce86c48c8a1481280fe27fe821016bff5ab05e9ee207206ae7766df5c1d2c3d0",
-    "metrics.py": "aa1f6a0ce2aaa467c1fa2a0670aa8ae5d145b47a6a2daf2235759654705cffbb",
-    "publication_figures.py": "bd9f22b911f604219cc7411f60d1534d37f4eb1a6250c58c6092f1259c69d9ad",
+    "metrics.py": "fb965a746820a389c71ccd8de279d03251826d1ceb6399180ac534a1781ab69e",
+    "publication_figures.py": "1d38aaf32974e8b2a2ce096b20b716cf955cd74d2de6147ee4e33386c5c3eff2",
     "simulation.py": "b3e53c96339b902c6f8cc12e38a571faeaaa71bd7e58d278162911432b88c88f"
   },
-  "study_id": "study_7b9893fd8312"
+  "study_id": "study_769f980831c0"
 }
