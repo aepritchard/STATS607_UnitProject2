@@ -18,9 +18,10 @@ simulate:
 analyze:
 	PYTHONPATH=src python3 -c "from metrics import run_all_metrics; run_all_metrics()"
 
-# Create all visualizations (figure code not written yet)
+# Create all visualizations
 figures:
-	@echo "No figure code yet"
+	PYTHONPATH=src python3 -c "from publication_figures import run_publication_figures; run_publication_figures()"
+# PYTHONPATH=src python3 -c "from diagnostic_figures import run_diagnostic_figures; run_diagnostic_figures()"
 
 # Run test suite
 test:

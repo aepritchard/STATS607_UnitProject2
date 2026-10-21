@@ -210,42 +210,6 @@
       "observed_covariate": "V",
       "pi_treat": 0.75
     },
-    "e3_n1000_ctrlcut0.5_trtcut0.75": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.5,
-      "cut_treat": 0.75,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 1000,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n1000_ctrlcut0.5_trtcut1.5": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.5,
-      "cut_treat": 1.5,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 1000,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n1000_ctrlcut0.95_trtcut0.75": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.95,
-      "cut_treat": 0.75,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 1000,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
     "e3_n1000_ctrlcut0.95_trtcut1.5": {
       "covariate_distribution": "uniform",
       "cut_control": 0.95,
@@ -255,42 +219,6 @@
         "logit"
       ],
       "n_sample": 1000,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n100_ctrlcut0.5_trtcut0.75": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.5,
-      "cut_treat": 0.75,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 100,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n100_ctrlcut0.5_trtcut1.5": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.5,
-      "cut_treat": 1.5,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 100,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n100_ctrlcut0.95_trtcut0.75": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.95,
-      "cut_treat": 0.75,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 100,
       "observed_covariate": "V",
       "pi_treat": 0.75
     },
@@ -306,42 +234,6 @@
       "observed_covariate": "V",
       "pi_treat": 0.75
     },
-    "e3_n5000_ctrlcut0.5_trtcut0.75": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.5,
-      "cut_treat": 0.75,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 5000,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n5000_ctrlcut0.5_trtcut1.5": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.5,
-      "cut_treat": 1.5,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 5000,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n5000_ctrlcut0.95_trtcut0.75": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.95,
-      "cut_treat": 0.75,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 5000,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
     "e3_n5000_ctrlcut0.95_trtcut1.5": {
       "covariate_distribution": "uniform",
       "cut_control": 0.95,
@@ -351,42 +243,6 @@
         "logit"
       ],
       "n_sample": 5000,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n500_ctrlcut0.5_trtcut0.75": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.5,
-      "cut_treat": 0.75,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 500,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n500_ctrlcut0.5_trtcut1.5": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.5,
-      "cut_treat": 1.5,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 500,
-      "observed_covariate": "V",
-      "pi_treat": 0.75
-    },
-    "e3_n500_ctrlcut0.95_trtcut0.75": {
-      "covariate_distribution": "uniform",
-      "cut_control": 0.95,
-      "cut_treat": 0.75,
-      "experiment": "e3_cutoffs",
-      "models": [
-        "logit"
-      ],
-      "n_sample": 500,
       "observed_covariate": "V",
       "pi_treat": 0.75
     },
@@ -510,9 +366,12 @@
   "seed": 607,
   "source_sha256": {
     "dgps.py": "327b59ec3b1faf6de3cd7dc1bd1bd9629a0a31bd44aa7108a35a97606903c77f",
+    "diagnostic_figures.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "figure_settings.py": "a83d884f4bb8cc59b0d1a5ca9aa3fdad0ef1a4f3ab20865d6a5c9fd784418af9",
     "methods.py": "ce86c48c8a1481280fe27fe821016bff5ab05e9ee207206ae7766df5c1d2c3d0",
     "metrics.py": "aa1f6a0ce2aaa467c1fa2a0670aa8ae5d145b47a6a2daf2235759654705cffbb",
+    "publication_figures.py": "bd9f22b911f604219cc7411f60d1534d37f4eb1a6250c58c6092f1259c69d9ad",
     "simulation.py": "b3e53c96339b902c6f8cc12e38a571faeaaa71bd7e58d278162911432b88c88f"
   },
-  "study_id": "study_892527dffded"
+  "study_id": "study_7b9893fd8312"
 }
