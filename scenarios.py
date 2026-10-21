@@ -32,7 +32,8 @@ for n_sample in N_SAMPLES:
 
 #### Experiment 2: Change % treated
 # Use same set-up as experiment 1, BUT change the % assigned to trt/ctrl
-# Specific values were not specified in the paper; we use 50% and 25% treated
+# Specific values were not specified in the paper
+# Use 0.75, 0.5, 0.25
 for n_sample in N_SAMPLES:
     for pi_treat in [0.75, 0.50, 0.25]:
         SCENARIOS[f"e2_pi{int(pi_treat * 100)}_n{n_sample}"] = {

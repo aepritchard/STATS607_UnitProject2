@@ -1,7 +1,7 @@
 '''
-Data Genearting Processs Tests  
+Data Generating Processs Tests  
     Verify that the correct number of samples are assigned trt for each randomization
-    Verify that the population remains the same (frozen) across reperitions
+    Verify that the population remains the same (frozen) across repetitions
 '''
 import numpy as np
 from dgps import DGP_Beta, DGP_Uniform
@@ -66,7 +66,7 @@ def test_population_same_across_reps():
         assert len(set(outcomes_under_ctrl)) <= 1
 
         # Make sure that treatment assignment DOES change across repetitions
-        first_trt_assignment = unif_repetitions[0]
+        first_trt_assignment = unif_repetitions[0]['trt']
         assignment_changes = False
         for rep in unif_repetitions[1:]:
                 if not np.array_equal(rep['trt'], first_trt_assignment):

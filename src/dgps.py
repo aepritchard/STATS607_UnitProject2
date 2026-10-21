@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 class DGP(ABC):
     '''
     Generate covariates and define outcomes based on covariates with length n_sample
-    Randomize treatment assignment n_sim times with probability pi_treat
+    Randomize treatment assignment n_sim times with complete randomization
     '''
     def __init__(self, experiment, n_sample, rng, n_sim=1000, pi_treat=0.75,
                  cut_control=0.5, cut_treat=0.75, observed_covariate="V"):
