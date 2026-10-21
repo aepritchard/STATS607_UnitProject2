@@ -5,3 +5,4 @@ statsmodels
 threadpoolctl
 tqdm
 pytest
+matplotlib
