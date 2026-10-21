@@ -1,10 +1,10 @@
 '''
 Test Method Correctness
     For a small dataset, calculate ITT by hand and compare to function
+    For a small dataset, calculate plug-in-estimator by hand and compare to function
 '''
 
 import numpy as np
-from dgps import DGP_Uniform
 from methods import Methods_logit 
 
 def test_itt_estimate_by_hand():

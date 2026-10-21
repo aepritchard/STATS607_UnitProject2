@@ -35,21 +35,21 @@ def run_test_scenario(scenario_id, out_dir):
 def test_same_seed_gives_identical_results(tmp_path):
     '''
     Test that independent runs of the same scenario using the same seed match
-    Each run writes to it's own folder to prevent runs from overriding each other
+    Each run writes to its own folder to prevent runs from overriding each other
     '''
     results_1 = run_test_scenario("test_scenario", tmp_path / "run_1a")
     results_2 = run_test_scenario("test_scenario", tmp_path / "run_2a")
 
-    # Dtop timing column since timing can vary b/w runs but doesn't affect results
+    # Drop timing column since timing can vary b/w runs but doesn't affect results
     results_1 = results_1.drop(columns="seconds")
     results_2 = results_2.drop(columns="seconds")
 
     pd.testing.assert_frame_equal(results_1, results_2)
 
-def test_diff_seed_gives_diff_results(tmp_path):
+def test_diff_scenarios_gives_diff_results(tmp_path):
     '''
-    Test that independent runs of the same scenario using the same seed match
-    Each run writes to it's own folder to prevent runs from overriding each other
+    Test that independent runs of different scenarios get different random streams
+    Each run writes to its own folder to prevent runs from overriding each other
     '''
     results_1 = run_test_scenario("test_scenario_1b", tmp_path / "run_1b")
     results_2 = run_test_scenario("test_scenario_2b", tmp_path / "run_2b")

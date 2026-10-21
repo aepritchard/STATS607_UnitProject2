@@ -30,4 +30,4 @@ test:
 # Remove generated files
 clean:
 	rm -rf results/raw results/tables results/figures
-	rm .*complete
+	rm -f .*complete
