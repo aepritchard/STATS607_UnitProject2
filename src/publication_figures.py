@@ -1,6 +1,7 @@
 '''
 Creates publication quality figures
 Examines bias versus sample size for all experiments
+Initial version of code was generated with assistance from Claude, then revised and edited
 '''
 from pathlib import Path
 import numpy as np

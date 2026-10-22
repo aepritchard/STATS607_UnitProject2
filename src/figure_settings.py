@@ -1,5 +1,6 @@
 '''
 Define settings to be shared across figures to reduce repeat code
+Initial version of code was generated with assistance from Claude, then revised and edited
 '''
 
 import numpy as np

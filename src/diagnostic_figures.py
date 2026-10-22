@@ -2,6 +2,7 @@
 Generate diagnostic figures
     Examine running bias vs number of repeitions to see if it stabilizes
         Can check if 1000 is enough repetitions
+Initial version of code was generated with assistance from Claude, then revised and edited
 '''
 from pathlib import Path
 import numpy as np
