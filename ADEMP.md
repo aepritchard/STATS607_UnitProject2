@@ -1,11 +1,10 @@
 **Aims**:
-Evaluate the performance of the logit model under misspecification as analyzed in Freedman (2008). 
+Evaluate the performance of estimators using a logit model under misspecification as analyzed in Freedman (2008). 
 In particular, we want to examine three estimators (MLE $\hat{\beta}_2$, plug-in estimator $\tilde{\delta}$, and ITT estimator $\hat{\delta}$) of the differential log odds ($\Delta$). 
 Then, we want to examine:
 
 * If $\hat{\beta}_2$ correctly estimates $\Delta$ (experiment 1).
 * The plug-in estimator $\tilde{\delta}$ and the ITT estimator $\hat{\delta}$ are unbiased for $\Delta$ (experiment 1).
-* The plug-in and ITT estimators have different variances (experiment 1).
 * Whether changing the logit model to a probit model affects bias/variance of the estimators (experiment 1).
 * Whether changing the proportion of samples treated affects bias/variance of the estimators (experiment 2).
 * Whether changing the cut-off values affects bias/variance of the estimators (experiment 3).
